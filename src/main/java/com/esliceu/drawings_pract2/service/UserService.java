@@ -19,4 +19,8 @@ public class UserService {
         return userDAO.addUser(user);
     }
 
+    public Integer getId(String username) {
+        return userDAO.getIdByUsername(username);
+    }
+
 }

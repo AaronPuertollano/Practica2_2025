@@ -2,6 +2,7 @@ package com.esliceu.drawings_pract2.dao;
 
 import com.esliceu.drawings_pract2.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -23,6 +24,16 @@ public class UserDAOsql implements UserDAO{
         String sql = "SELECT COUNT(*) FROM users WHERE username = ? AND password = ?";
         Integer count = jdbc.queryForObject(sql, Integer.class, username, password);
         return count != null && count > 0;
+    }
+
+    @Override
+    public Integer getIdByUsername(String username) {
+        String sql = "SELECT id FROM users WHERE username = ?";
+        try {
+            return jdbc.queryForObject(sql, Integer.class, username);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
 

@@ -7,4 +7,6 @@ public interface UserDAO {
     boolean addUser(User user);
 
     boolean checkUser(String username, String password);
+
+    Integer getIdByUsername(String username);
 }

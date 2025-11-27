@@ -1,12 +1,521 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html>
 <head>
+
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Paint</title>
+    <style>
+        /* Reset básico */
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+          background-color: #f4f4f9;
+          color: #333;
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+        }
+
+        /* ===== Header ===== */
+        header {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 3rem;
+          background-color: #222;
+          color: white;
+          padding: 1rem 0;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        header a {
+          color: white;
+          text-decoration: none;
+          font-weight: bold;
+          transition: color 0.3s;
+        }
+
+        header a:hover {
+          color: #00bfff;
+        }
+
+        /* ===== Contenido principal ===== */
+        .contingut {
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          gap: 2rem;
+          padding: 2rem;
+          flex-grow: 1;
+        }
+
+        canvas {
+          background-color: white;
+          border-radius: 10px;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+          cursor: crosshair;
+        }
+
+        .list {
+        background-color: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        width: 350px;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        position: sticky;
+        top: 2rem;
+        align-self: flex-start;
+        max-height: 500px;
+        overflow-y: auto;
+    }
+
+        .list h2 {
+          text-align: center;
+          color: #222;
+          margin-bottom: 0.5rem;
+        }
+
+        .content {
+          flex: 1;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          padding: 0.5rem;
+          overflow-y: auto;
+          min-height: 100px;
+          max-height: 200px;
+          background-color: #fafafa;
+        }
+
+        .butonfinish {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .butonfinish input[type="text"] {
+          width: 100%;
+          padding: 0.4rem;
+          border-radius: 6px;
+          border: 1px solid #aaa;
+        }
+
+        .butonfinish button {
+          padding: 0.5rem;
+          border: none;
+          border-radius: 6px;
+          background-color: #222;
+          color: white;
+          cursor: pointer;
+          font-weight: bold;
+          transition: background-color 0.3s;
+        }
+
+        .butonfinish button:hover {
+          background-color: #00bfff;
+        }
+
+        /* ===== Parámetros ===== */
+        .parameters {
+          display: flex;
+          justify-content: center;
+          gap: 2rem;
+          background-color: #fff;
+          padding: 1rem 0;
+          border-top: 2px solid #ddd;
+          box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+        }
+
+        .parameters div {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .parameters h4 {
+          margin-bottom: 0.5rem;
+          color: #222;
+        }
+
+        select, input[type="color"] {
+          padding: 0.4rem;
+          border-radius: 6px;
+          border: 1px solid #ccc;
+          cursor: pointer;
+        }
+
+        /* ===== Logout ===== */
+        form[action="logout"] {
+          display: flex;
+          justify-content: center;
+          padding: 1rem;
+        }
+
+        form[action="logout"] button {
+          background-color: #d9534f;
+          color: white;
+          border: none;
+          padding: 0.6rem 1.2rem;
+          border-radius: 6px;
+          font-weight: bold;
+          cursor: pointer;
+          transition: background-color 0.3s;
+        }
+
+        form[action="logout"] button:hover {
+          background-color: #b52b27;
+        }
+
+        /* ===== Responsivo ===== */
+        @media (max-width: 900px) {
+          .contingut {
+            flex-direction: column;
+            align-items: center;
+          }
+
+          .list {
+            width: 90%;
+          }
+
+          .parameters {
+            flex-wrap: wrap;
+          }
+        }
+    </style>
 </head>
 
 <body>
-    <h2>Paint</h2>
+
+<header>
+    <h3>
+        <a href="/paint">PAINT</a>
+    </h3>
+    <h3>
+        <a href="/private">PRIVATE GALLERY</a>
+    </h3>
+    <h3>
+        <a href="/public">PUBLIC GALLERY</a>
+    </h3>
+    <h3>
+        <a href="/shared">SHARED WITH ME</a>
+    </h3>
+    <h3>
+        <a href="/trash">TRASH</a>
+    </h3>
+</header>
+
+<div class="contingut">
+
+    <canvas id="myCanvas" width="600" height="400" style="border:3px solid #000000;"></canvas>
+
+    <div class="list">
+
+        <h2>FIGURES</h2>
+
+        <div class="content" id="figureList">
+            <!-- Aquí se mostrarán las figuras añadidas -->
+        </div>
+
+        <div class="butonfinish">
+            <p>Name: <input type="text" id="namepaint" name="namepaint" placeholder="Put a name please"></p>
+
+            <input type="hidden" name="stringobjectes" id="inputobjectes">
+            <button type="button" id="saveButton">Save Drawing</button>
+            <button type="button" id="deleteButton">Delete all</button>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="parameters">
+    <div>
+        <h4>MODE</h4>
+        <select id="shapeType">
+            <option value="selectshape">SELECT SHAPE</option>
+            <option value="square">SQUARE</option>
+            <option value="circle">CIRCLE</option>
+            <option value="triangle">TRIANGLE</option>
+            <option value="star">STAR</option>
+            <option value="hand">HANDS UP</option>
+        </select>
+    </div>
+    <div>
+        <h4>COLOR</h4>
+        <input type="color" id="colorInput" value="#000000">
+    </div>
+    <div>
+        <h4>SIZE</h4>
+        <select id="sizeInput">
+            <option value="35">SMALL</option>
+            <option value="60">MEDIUM</option>
+            <option value="95">BIG</option>
+        </select>
+    </div>
+    <div>
+        <h4>FILL</h4>
+
+        <select id="fillShape">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </select>
+
+    </div>
+
+</div>
+
+<form action="logout" method="get" style="display:inline;">
+    <button type="submit">Logout</button>
+</form>
+
+
+<script>
+
+    const canvas = document.getElementById("myCanvas");
+    const ctx = canvas.getContext("2d");
+    const figureList = document.getElementById("figureList");
+    const shapes = [];
+    let isDrawing = false;
+    let currentShape = null;
+
+    // Cargar shapes desde localStorage al iniciar
+    document.addEventListener("DOMContentLoaded", () => {
+        const savedShapes = localStorage.getItem("shapes");
+        if (savedShapes) {
+            shapes.push(...JSON.parse(savedShapes));
+            redrawCanvas();
+            updateShapeList();
+        }
+    });
+
+    // FIGURAS
+    const drawRect = (x, y, w, h, color, filled) => {
+        ctx.beginPath();
+        ctx.fillStyle = color;
+        ctx.strokeStyle = color;
+        if (filled) ctx.fillRect(x, y, w, h);
+        else ctx.strokeRect(x, y, w, h);
+    };
+
+    const drawCircle = (x, y, radius, color, filled) => {
+        ctx.beginPath();
+        ctx.fillStyle = color;
+        ctx.strokeStyle = color;
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        if (filled) ctx.fill();
+        else ctx.stroke();
+    };
+
+    const drawTriangle = (x, y, size, color, filled) => {
+        ctx.beginPath();
+        ctx.fillStyle = color;
+        ctx.strokeStyle = color;
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - size / 2, y + size);
+        ctx.lineTo(x + size / 2, y + size);
+        ctx.closePath();
+        if (filled) ctx.fill();
+        else ctx.stroke();
+    };
+
+    const drawStar = (x, y, size, color, filled) => {
+        const points = 7;
+        const outerRadius = size;
+        const innerRadius = size / 2.5;
+        const angle = Math.PI / points;
+        ctx.beginPath();
+        ctx.fillStyle = color;
+        ctx.strokeStyle = color;
+        for (let i = 0; i < points * 2; i++) {
+            const radius = i % 2 === 0 ? outerRadius : innerRadius;
+            const px = x + radius * Math.cos(i * angle);
+            const py = y + radius * Math.sin(i * angle);
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        if (filled) ctx.fill();
+        else ctx.stroke();
+    };
+
+    const startHandDrawing = (x, y, color, size) => {
+        isDrawing = true;
+        currentShape = { type: "hand", color, size, points: [{ x, y }] };
+        shapes.push(currentShape);
+        updateShapeList();
+        saveShapesToLocalStorage();
+    };
+
+    const addHandPoint = (x, y) => {
+        if (!currentShape || currentShape.type !== "hand") return;
+        currentShape.points.push({ x, y });
+        redrawCanvas();
+    };
+
+    const stopHandDrawing = () => {
+        isDrawing = false;
+        currentShape = null;
+    };
+
+    // Redibujar figuras
+    const redrawCanvas = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        shapes.forEach(shape => {
+            switch (shape.type) {
+                case "square": drawRect(shape.x, shape.y, shape.size, shape.size, shape.color, shape.filled); break;
+                case "circle": drawCircle(shape.x, shape.y, shape.size / 2, shape.color, shape.filled); break;
+                case "triangle": drawTriangle(shape.x, shape.y, shape.size, shape.color, shape.filled); break;
+                case "star": drawStar(shape.x, shape.y, shape.size, shape.color, shape.filled); break;
+                case "hand":
+                    ctx.beginPath();
+                    ctx.strokeStyle = shape.color;
+                    ctx.lineWidth = shape.size / 5;
+                    ctx.moveTo(shape.points[0].x, shape.points[0].y);
+                    for (let i = 1; i < shape.points.length; i++) {
+                        ctx.lineTo(shape.points[i].x, shape.points[i].y);
+                    }
+                    ctx.stroke();
+                    ctx.closePath();
+                    break;
+            }
+        });
+    };
+
+    // Actualizar lista
+    const updateShapeList = () => {
+        figureList.innerHTML = "";
+        shapes.forEach((shape, index) => {
+            const item = document.createElement("p");
+            const label = shape.type;
+            const color = shape.color;
+            const size = shape.size;
+
+
+            item.textContent = (index + 1) + " | " + label + " | color: " + color + "| size: " + size;
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "X";
+            deleteBtn.style.marginLeft = "10px";
+            deleteBtn.addEventListener("click", () => {
+                shapes.splice(index, 1);
+                redrawCanvas();
+                updateShapeList();
+                saveShapesToLocalStorage();
+            });
+
+            item.appendChild(deleteBtn);
+            figureList.appendChild(item);
+        });
+    };
+
+    // Eventos del canvas
+    canvas.addEventListener("mousedown", (event) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        const size = parseInt(document.getElementById("sizeInput").value, 10);
+        const color = document.getElementById("colorInput").value;
+        const type = document.getElementById("shapeType").value;
+        const filled = document.getElementById("fillShape").value === "true";
+
+        if (type === "hand") {
+            startHandDrawing(x, y, color, size);
+            return;
+        }
+
+        let newShape = { type, x, y, size, color, filled };
+        switch(type) {
+            case "square": drawRect(x, y, size, size, color, filled); break;
+            case "circle": drawCircle(x, y, size/2, color, filled); break;
+            case "triangle": drawTriangle(x, y, size, color, filled); break;
+            case "star": drawStar(x, y, size, color, filled); break;
+            default: return;
+        }
+        shapes.push(newShape);
+        updateShapeList();
+        console.log("shapes:", shapes);
+        saveShapesToLocalStorage();
+    });
+
+    canvas.addEventListener("mousemove", (event) => {
+        if (!isDrawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        addHandPoint(x, y);
+    });
+
+    canvas.addEventListener("mouseup", stopHandDrawing);
+    canvas.addEventListener("mouseout", stopHandDrawing);
+
+    // Borrar todo
+    document.getElementById("deleteButton").addEventListener("click", () => {
+        shapes.length = 0;
+        redrawCanvas();
+        updateShapeList();
+        saveShapesToLocalStorage();
+    });
+
+    const saveShapesToLocalStorage = () => {
+        localStorage.setItem("shapes", JSON.stringify(shapes));
+        updateShapeList();
+        redrawCanvas();
+    };
+
+  //PROCESO DE ENVIO
+    document.getElementById("saveButton").addEventListener("click", handleSaveDrawing);
+
+    function handleSaveDrawing() {
+      let namePaint = document.getElementById("namepaint").value.trim();
+
+      // Si no hay nombre, generamos uno
+      if (!namePaint) {
+        const randomNum = Math.floor(Math.random() * 10000);
+        namePaint = "Drawing_" + randomNum;
+        document.getElementById("namepaint").value = namePaint;
+      }
+
+      if (shapes.length === 0) {
+        alert("Please add at least one shape before saving.");
+        return;
+      }
+
+      const params = new URLSearchParams();
+      params.append("name", namePaint);
+      params.append("drawingData", JSON.stringify(shapes));
+
+      fetch("/paint", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params.toString()
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert("Drawing saved successfully!");
+          shapes.length = 0;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          updateShapeList();
+          document.getElementById("namepaint").value = "";
+          localStorage.removeItem("shapes");
+        } else {
+          alert("Error saving drawing: " + (data.message || "Unknown error"));
+        }
+      })
+      .catch(err => {
+        alert("Failed to connect to the server.");
+      });
+    }
+
+</script>
 
 
 </body>

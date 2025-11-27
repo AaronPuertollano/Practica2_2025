@@ -51,7 +51,12 @@ public class DrawingsPract2Application implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(sessionInterceptor)
-                .addPathPatterns("/paint");
+                .addPathPatterns("/paint")
+                .addPathPatterns("/private")
+                .addPathPatterns("/public")
+                .addPathPatterns("/trash")
+                .addPathPatterns("/shared")
+                .addPathPatterns("/versions");
     }
 
 

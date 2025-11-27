@@ -2,6 +2,9 @@ package com.esliceu.drawings_pract2.controller;
 
 import com.esliceu.drawings_pract2.model.User;
 import com.esliceu.drawings_pract2.service.UserService;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,6 +12,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.io.IOException;
 
 @Controller
 public class UserController {
@@ -24,9 +29,11 @@ public class UserController {
     @PostMapping("/login")
     public String loginSubmit(@RequestParam String username,
                               @RequestParam String password,
-                              Model model) {
+                              Model model, HttpServletRequest req, HttpServletResponse resp) {
 
         if (userService.validateUser(username, password)) {
+            HttpSession session = req.getSession();
+            session.setAttribute("username", username);
             return "redirect:/paint";
         } else {
             model.addAttribute("error", "Usuario o contraseña incorrectos");
@@ -34,11 +41,6 @@ public class UserController {
         }
     }
 
-    @GetMapping("/paint")
-    public String paintPage(HttpSession req) {
-
-        return "paint";
-    }
 
     @GetMapping("/register")
     public String registerPage() {
@@ -51,6 +53,18 @@ public class UserController {
                                @RequestParam String password) {
 
         userService.addUser(new User(name, username, password));
+        return "redirect:/login";
+    }
+
+    @PostMapping("/logout")
+    public String registerUser(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        HttpSession session = req.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
         return "redirect:/login";
     }
 }
