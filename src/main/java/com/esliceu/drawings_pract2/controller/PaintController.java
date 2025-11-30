@@ -73,4 +73,110 @@ public class PaintController {
         return json;
     }
 
+    @PostMapping("/paint/changePublic")
+    @ResponseBody
+    public Map<String, Object> changePublic(HttpSession session,
+                                            @RequestParam int paintId,
+                                            @RequestParam boolean isPublic) {
+        Map<String, Object> json = new HashMap<>();
+
+        String username = (String) session.getAttribute("username");
+        int ownerId = userService.getId(username);
+
+        Paint paint = paintService.findById(paintId);
+        if (paint == null) {
+            json.put("success", false);
+            json.put("message", "Paint not found");
+            return json;
+        }
+
+        if (paint.getOwnerId() != ownerId) {
+            json.put("success", false);
+            json.put("message", "You are not the owner of this paint");
+            return json;
+        }
+
+        if (paint.isPublic()){
+            paint.setPublic(false);
+        } else {
+            paint.setPublic(isPublic);
+        }
+
+        paint.setLastModified(LocalDateTime.now());
+        paintService.update(paint);
+
+        json.put("success", true);
+        json.put("isPublic", isPublic);
+        return json;
+    }
+
+    @PostMapping("/paint/changeTrash")
+    @ResponseBody
+    public Map<String, Object> changeTrash(HttpSession session,
+                                           @RequestParam int paintId,
+                                           @RequestParam boolean isTrash) {
+
+        Map<String, Object> json = new HashMap<>();
+
+        String username = (String) session.getAttribute("username");
+        int ownerId = userService.getId(username);
+
+        Paint paint = paintService.findById(paintId);
+        if (paint == null) {
+            json.put("success", false);
+            json.put("message", "Paint not found");
+            return json;
+        }
+
+        if (paint.getOwnerId() != ownerId) {
+            json.put("success", false);
+            json.put("message", "You are not the owner of this paint");
+            return json;
+        }
+
+        if (paint.isInTrash()){
+            paint.setInTrash(false);
+        } else {
+            paint.setInTrash(isTrash);
+        }
+
+        paint.setLastModified(LocalDateTime.now());
+        paintService.update(paint);
+
+        json.put("success", true);
+        json.put("isTrash", isTrash);
+        return json;
+    }
+
+
+
+    @PostMapping("/paint/delete")
+    @ResponseBody
+    public Map<String, Object> deletePaint(HttpSession session,
+                                           @RequestParam int paintId) {
+
+        Map<String, Object> json = new HashMap<>();
+
+        String username = (String) session.getAttribute("username");
+        int ownerId = userService.getId(username);
+
+        Paint paint = paintService.findById(paintId);
+        if (paint == null) {
+            json.put("success", false);
+            json.put("message", "Paint not found");
+            return json;
+        }
+
+        if (paint.getOwnerId() != ownerId) {
+            json.put("success", false);
+            json.put("message", "You are not the owner of this paint");
+            return json;
+        }
+
+        paintService.delete(paintId);
+
+        json.put("success", true);
+        return json;
+    }
+
 }

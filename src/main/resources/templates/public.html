@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:c="http://www.w3.org/1999/XSL/Transform">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Public gallery</title>
@@ -128,7 +128,7 @@
         <a href="/paint">PAINT</a>
     </h3>
     <h3>
-        <a href="/private">PRIVATE GALLERY</a>
+        <a href="/private">PERSONAL GALLERY</a>
     </h3>
     <h3>
         <a href="/public">PUBLIC GALLERY</a>
@@ -144,24 +144,22 @@
 <h2>Public Gallery</h2>
 
 <div class="gallery-container">
-    <c:choose>
-        <c:when test="${empty paintList}">
-            <p style="grid-column: 1 / -1; text-align: center; font-size: 1.2rem; color: #555;">
-                This place is empty....
-            </p>
-        </c:when>
-        <c:otherwise>
-            <c:forEach var="paint" items="${paintList}">
-                <div class="gallery-item">
-                    <h4>${paint.name}</h4>
-                    <p>Author: ${paint.owner}</p>
-                    <p>Dia: ${paint.date}</p>
-                    <button onclick="window.location.href='/view?name=${paint.name}&owner=${paint.owner}'">View</button>
+    <p th:if="${#lists.isEmpty(paintList)}"
+       style="grid-column: 1 / -1; text-align: center; font-size: 1.2rem; color: #555;">
+        This place is empty....
+    </p>
 
-                </div>
-            </c:forEach>
-        </c:otherwise>
-    </c:choose>
+    <div class="gallery-item"
+         th:each="paint : ${paintList}">
+
+        <h4 th:text="${paint.name}"></h4>
+        <p>Author: <span th:text="${paint.owner}"></span></p>
+        <p>Dia: <span th:text="${paint.date}"></span></p>
+
+        <button th:onclick="'window.location.href=\'/view?name=' + ${paint.name} + '\';'">
+            View
+        </button>
+    </div>
 </div>
 
 <form action="logout" method="get" style="display:inline;">

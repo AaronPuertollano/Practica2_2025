@@ -6,8 +6,10 @@ import com.esliceu.drawings_pract2.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -20,31 +22,53 @@ public class ListController {
     UserService userService;
 
     @GetMapping("/public")
-    public String publicPage(HttpSession req) {
+    public String publicPage(HttpSession req, Model model) {
 
-        /*List<Paint> publicPaints = paintService.getAllPaints();
-        req.setAttribute("paintList", publicPaints);*/
+        List<Paint> paintList = paintService.findPublicPaints();
+
+        model.addAttribute("paintList", paintList);
 
         return "public";
     }
 
     @GetMapping("/private")
-    public String privatePage(HttpSession req) {
+    public String privatePage(HttpSession req, Model model) {
+        String username = (String) req.getAttribute("username");
+        int ownerId = userService.getId(username);
+
+        List<Paint> paintList = paintService.findByOwner(ownerId);
+
+        model.addAttribute("paintList", paintList);
         return "private";
     }
 
     @GetMapping("/trash")
-    public String TrashPage(HttpSession req) {
+    public String TrashPage(HttpSession req, Model model) {
+        String username = (String) req.getAttribute("username");
+        int ownerId = userService.getId(username);
+
+        List<Paint> paintList = paintService.findByOwnerAndTrash(ownerId,true);
+
+        model.addAttribute("paintList", paintList);
         return "trash";
     }
 
     @GetMapping("/shared")
-    public String SharedPage(HttpSession req) {
+    public String SharedPage(HttpSession req, Model model) {
+        String username = (String) req.getAttribute("username");
+        int ownerId = userService.getId(username);
+
+        model.addAttribute("paintList", new ArrayList<>());
         return "sharedWhitMe";
     }
 
     @GetMapping("/versions")
-    public String VersionsPage(HttpSession req) {
+    public String VersionsPage(HttpSession req, Model model) {
+        String username = (String) req.getAttribute("username");
+        int ownerId = userService.getId(username);
+
+        model.addAttribute("paintList", new ArrayList<>());
+
         return "versions";
     }
 

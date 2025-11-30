@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:c="http://www.w3.org/1999/XSL/Transform">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Private gallery</title>
@@ -128,7 +128,7 @@
         <a href="/paint">PAINT</a>
     </h3>
     <h3>
-        <a href="/private">PRIVATE GALLERY</a>
+        <a href="/private">PERSONAL GALLERY</a>
     </h3>
     <h3>
         <a href="/public">PUBLIC GALLERY</a>
@@ -144,24 +144,32 @@
 <h2>Trash</h2>
 
 <div class="gallery-container">
-    <c:choose>
-        <c:when test="${empty paintList}">
-            <p style="grid-column: 1 / -1; text-align: center; font-size: 1.2rem; color: #555;">
-                This place is empty....
-            </p>
-        </c:when>
-        <c:otherwise>
-            <c:forEach var="paint" items="${paintList}">
-                <div class="gallery-item">
-                    <h4>${paint.name}</h4>
-                    <p>Author: ${paint.owner}</p>
-                    <p>Dia: ${paint.date}</p>
-                    <button class="delete-btn" data-name="${paint.name}">Delete</button>
-                    <button onclick="window.location.href='/view?name=${paint.name}'">View</button>
-                </div>
-            </c:forEach>
-        </c:otherwise>
-    </c:choose>
+    <p th:if="${#lists.isEmpty(paintList)}"
+       style="grid-column: 1 / -1; text-align: center; font-size: 1.2rem; color: #555;">
+        This place is empty....
+    </p>
+
+    <div class="gallery-item"
+         th:each="paint : ${paintList}">
+
+        <h4 th:text="${paint.name}"></h4>
+        <p>Day creation: <span th:text="${paint.creationDate}"></span></p>
+        <p>Last modification: <span th:text="${paint.lastModified}"></span></p>
+
+        <button class="delete-btn"
+                th:attr="data-id=${paint.id}">
+            Delete
+        </button>
+
+        <button class="save-btn"
+                th:attr="data-name=${paint.name}">
+            Save paint
+        </button>
+
+        <button th:onclick="'window.location.href=\'/view?name=' + ${paint.name} + '\';'">
+            View
+        </button>
+    </div>
 </div>
 
 
@@ -174,24 +182,31 @@
     document.addEventListener("DOMContentLoaded", () => {
 
       document.querySelectorAll(".delete-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const name = btn.dataset.name;
-          if (confirm(`Are you sure?`)) {
-            fetch("/private?action=delete&name=" + encodeURIComponent(name), {
-              method: "POST"
-            })
-            .then(res => res.json())
-            .then(data => {
-              if (data.success) {
-                alert("Drawing deleted!");
-                location.reload();
-              } else {
-                alert("Error deleting drawing.");
-              }
+            btn.addEventListener("click", () => {
+                const paintId = btn.dataset.id;
+
+                if (confirm(`Are you sure?`)) {
+                    fetch("/paint/delete", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: `paintId=${paintId}`
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Drawing deleted!");
+                            location.reload();
+                        } else {
+                            alert("Error: " + data.message);
+                        }
+                    });
+                }
             });
-          }
         });
-      });
+
+
+
+
     });
 
 </script>
