@@ -36,7 +36,10 @@ public class ListController {
         String username = (String) req.getAttribute("username");
         int ownerId = userService.getId(username);
 
-        List<Paint> paintList = paintService.findByOwner(ownerId);
+        List<Paint> paintList = paintService.findByOwner(ownerId)
+                .stream()
+                .filter(p -> !p.isInTrash())
+                .toList();
 
         model.addAttribute("paintList", paintList);
         return "private";

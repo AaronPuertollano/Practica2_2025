@@ -153,10 +153,10 @@
          th:each="paint : ${paintList}">
 
         <h4 th:text="${paint.name}"></h4>
-        <p>Author: <span th:text="${paint.owner}"></span></p>
-        <p>Dia: <span th:text="${paint.date}"></span></p>
+        <p>Day creation: <span th:text="${paint.creationDate}"></span></p>
+        <p>Last modification: <span th:text="${paint.lastModified}"></span></p>
 
-        <button th:onclick="'window.location.href=\'/view?name=' + ${paint.name} + '\';'">
+        <button class="view-btn" th:attr="data-name=${paint.name}">
             View
         </button>
     </div>
