@@ -156,11 +156,6 @@
         <p>Day creation: <span th:text="${paint.creationDate}"></span></p>
         <p>Last modification: <span th:text="${paint.lastModified}"></span></p>
 
-        <button class="edit-btn"
-                th:attr="data-name=${paint.name}">
-            Edit
-        </button>
-
         <button class="copy-btn"
                 th:attr="data-name=${paint.name}">
             Copy
@@ -169,6 +164,13 @@
         <button class="view-btn" th:attr="data-name=${paint.name}">
             View
         </button>
+
+        <button class="edit-btn"
+                th:if="${permissions.?[canWrite].![paintId].contains(paint.id)}"
+                th:attr="data-name=${paint.name}">
+            Edit
+        </button>
+
     </div>
 </div>
 

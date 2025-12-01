@@ -38,4 +38,8 @@ public class Paint_Permissons {
     public void setCanWrite(boolean canWrite) {
         this.canWrite = canWrite;
     }
+
+    public boolean canWriteFor(int paintId) {
+        return this.paintId == paintId && this.canWrite;
+    }
 }

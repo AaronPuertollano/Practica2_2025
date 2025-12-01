@@ -1,6 +1,7 @@
 package com.esliceu.drawings_pract2.controller;
 
 import com.esliceu.drawings_pract2.model.Paint;
+import com.esliceu.drawings_pract2.model.Paint_Permissons;
 import com.esliceu.drawings_pract2.service.PaintPermissionService;
 import com.esliceu.drawings_pract2.service.PaintService;
 import com.esliceu.drawings_pract2.service.UserService;
@@ -67,7 +68,10 @@ public class ListController {
 
         List<Paint> sharedPaints = paintPermissionService.getSharedWithUser(userId);
 
+        List<Paint_Permissons> permissions = paintPermissionService.getPermissionsForUser(userId);
+
         model.addAttribute("paintList", sharedPaints);
+        model.addAttribute("permissions", permissions);
         return "sharedWhitMe";
     }
 
