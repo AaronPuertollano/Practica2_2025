@@ -180,6 +180,10 @@
             Change show status
         </button>
 
+        <button class="share-btn" th:attr="data-id=${paint.id}">
+            Share
+        </button>
+
     </div>
 
 </div>
@@ -216,6 +220,24 @@
                 });
             });
         });
+
+            document.querySelectorAll(".share-btn").forEach(btn => {
+                btn.addEventListener("click", async () => {
+                    const paintId = btn.dataset.id;
+                    const username = prompt("Enter the username to share with:");
+                    if (!username) return;
+                    const canWrite = confirm("Allow write permission?");
+                    const res = await fetch("/paint/share", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: `paintId=${paintId}&username=${username}&canWrite=${canWrite}`
+                    });
+                    const data = await res.json();
+                    if (data.success) alert("Shared successfully!");
+                    else alert("Error: " + data.message);
+                });
+            });
+
 
         document.querySelectorAll(".public-btn").forEach(btn => {
             btn.addEventListener("click", () => {

@@ -2,7 +2,9 @@ package com.esliceu.drawings_pract2.controller;
 
 import com.esliceu.drawings_pract2.model.Paint;
 import com.esliceu.drawings_pract2.model.User;
+import com.esliceu.drawings_pract2.service.PaintPermissionService;
 import com.esliceu.drawings_pract2.service.PaintService;
+import com.esliceu.drawings_pract2.service.PaintVersionService;
 import com.esliceu.drawings_pract2.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,6 +28,12 @@ public class PaintController {
 
     @Autowired
     PaintService paintService;
+
+    @Autowired
+    PaintPermissionService paintPermissionService;
+
+    @Autowired
+    PaintVersionService paintVersionService;
 
     @Autowired
     UserService userService;
@@ -178,5 +186,72 @@ public class PaintController {
         json.put("success", true);
         return json;
     }
+
+
+    @PostMapping("/paint/share")
+    @ResponseBody
+    public Map<String, Object> sharePaint(HttpSession session,
+                                          @RequestParam int paintId,
+                                          @RequestParam String username,
+                                          @RequestParam boolean canWrite) {
+
+        Map<String, Object> json = new HashMap<>();
+        String currentUser = (String) session.getAttribute("username");
+        int ownerId = userService.getId(currentUser);
+
+        Paint paint = paintService.findById(paintId);
+        if (paint == null) {
+            json.put("success", false);
+            json.put("message", "Paint not found");
+            return json;
+        }
+
+        if (paint.getOwnerId() != ownerId) {
+            json.put("success", false);
+            json.put("message", "You are not the owner");
+            return json;
+        }
+
+        Integer targetUserId = userService.getId(username);
+        if (targetUserId == null) {
+            json.put("success", false);
+            json.put("message", "User not found");
+            return json;
+        }
+
+        paintPermissionService.sharePaint(paintId, targetUserId, canWrite);
+        json.put("success", true);
+        return json;
+    }
+
+
+    @PostMapping("/paint/unshare")
+    @ResponseBody
+    public Map<String, Object> unsharePaint(HttpSession session,
+                                            @RequestParam int paintId,
+                                            @RequestParam String username) {
+        Map<String, Object> json = new HashMap<>();
+        String currentUser = (String) session.getAttribute("username");
+        int ownerId = userService.getId(currentUser);
+
+        Paint paint = paintService.findById(paintId);
+        if (paint.getOwnerId() != ownerId) {
+            json.put("success", false);
+            json.put("message", "You are not the owner");
+            return json;
+        }
+
+        Integer targetUserId = userService.getId(username);
+        if (targetUserId == null) {
+            json.put("success", false);
+            json.put("message", "User not found");
+            return json;
+        }
+
+        paintPermissionService.unsharePaint(paintId, targetUserId);
+        json.put("success", true);
+        return json;
+    }
+
 
 }

@@ -1,6 +1,7 @@
 package com.esliceu.drawings_pract2.controller;
 
 import com.esliceu.drawings_pract2.model.Paint;
+import com.esliceu.drawings_pract2.service.PaintPermissionService;
 import com.esliceu.drawings_pract2.service.PaintService;
 import com.esliceu.drawings_pract2.service.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -20,6 +21,9 @@ public class ListController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    PaintPermissionService paintPermissionService;
 
     @GetMapping("/public")
     public String publicPage(HttpSession req, Model model) {
@@ -59,9 +63,11 @@ public class ListController {
     @GetMapping("/shared")
     public String SharedPage(HttpSession req, Model model) {
         String username = (String) req.getAttribute("username");
-        int ownerId = userService.getId(username);
+        int userId = userService.getId(username);
 
-        model.addAttribute("paintList", new ArrayList<>());
+        List<Paint> sharedPaints = paintPermissionService.getSharedWithUser(userId);
+
+        model.addAttribute("paintList", sharedPaints);
         return "sharedWhitMe";
     }
 
