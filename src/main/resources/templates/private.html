@@ -167,7 +167,11 @@
             Edit
         </button>
 
-        <button class="view-btn" th:attr="data-name=${paint.name}">
+        <button class="copy-btn" th:attr="data-id=${paint.id}">
+            Copy
+        </button>
+
+        <button class="view-btn" th:attr="data-id=${paint.id}">
             View
         </button>
 
@@ -194,6 +198,36 @@
 
 
 <script>
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".copy-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const paintId = btn.dataset.id;
+
+                if (!confirm("Do you want to copy this drawing?")) return;
+
+                fetch("/paint/copy", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: `paintId=${paintId}`
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Drawing copied successfully!");
+                        location.reload();
+                    } else {
+                        alert("Error copying drawing: " + data.message);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Failed to connect to the server.");
+                });
+            });
+        });
+    });
+
     document.addEventListener("DOMContentLoaded", () => {
 
         document.querySelectorAll(".trash-btn").forEach(btn => {
@@ -261,6 +295,17 @@
         });
 
     });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".view-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const paintId = btn.dataset.id;
+
+                window.location.href = "/paint/view?paintId=" + paintId;
+            });
+        });
+    });
+
 </script>
 
 

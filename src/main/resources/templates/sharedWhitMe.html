@@ -160,7 +160,7 @@
             Copy
         </button>
 
-        <button class="view-btn" th:attr="data-name=${paint.name}">
+        <button class="view-btn" th:attr="data-id=${paint.id}">
             View
         </button>
 
@@ -206,6 +206,16 @@
                     console.error(err);
                     alert("Failed to connect to the server.");
                 });
+            });
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".view-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const paintId = btn.dataset.id;
+
+                window.location.href = "/paint/view?paintId=" + paintId;
             });
         });
     });

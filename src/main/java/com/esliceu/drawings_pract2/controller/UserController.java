@@ -31,7 +31,9 @@ public class UserController {
                               @RequestParam String password,
                               Model model, HttpServletRequest req, HttpServletResponse resp) {
 
-        if (userService.validateUser(username, password)) {
+        String passwordHash = String.valueOf(password.hashCode());
+
+        if (userService.validateUser(username, passwordHash)) {
             HttpSession session = req.getSession();
             session.setAttribute("username", username);
             return "redirect:/paint";
@@ -52,7 +54,9 @@ public class UserController {
                                @RequestParam String username,
                                @RequestParam String password) {
 
-        userService.addUser(new User(name, username, password));
+        String passwordHash = String.valueOf(password.hashCode());
+
+        userService.addUser(new User(name, username, passwordHash));
         return "redirect:/login";
     }
 

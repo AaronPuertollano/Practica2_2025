@@ -61,8 +61,9 @@ public class PaintController {
 
         int ownerId = userService.getId(user);
 
-        //Envez de no hacerlo puedo avisar de que hay otro con el mismo nombre y sobreeescribir, asi opdria empezar
-        // con las versiones
+        //Envez de no hacerlo puedo comporovar de que hay otro con el mismo nombre y sobreeescribir, asi opdria empezar
+        // con las versiones (si tiene el mismo json de figura no se hace)
+        //si se está editando con otro usuario comprovar si tiene permisos.
         if (paintService.existsByNameAndOwner(name, ownerId)) {
             json.put("success", false);
             json.put("message", "You already have a drawing with that name.");
@@ -183,6 +184,8 @@ public class PaintController {
         }
 
         paintService.delete(paintId);
+
+        //TAMBIEN TIENE QUE BORRAR DE LA TRABLA DE SHARE Y VERSIONES
 
         json.put("success", true);
         return json;
