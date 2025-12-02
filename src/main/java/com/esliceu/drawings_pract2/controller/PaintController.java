@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -60,6 +61,8 @@ public class PaintController {
 
         int ownerId = userService.getId(user);
 
+        //Envez de no hacerlo puedo avisar de que hay otro con el mismo nombre y sobreeescribir, asi opdria empezar
+        // con las versiones
         if (paintService.existsByNameAndOwner(name, ownerId)) {
             json.put("success", false);
             json.put("message", "You already have a drawing with that name.");
@@ -156,8 +159,6 @@ public class PaintController {
         return json;
     }
 
-
-
     @PostMapping("/paint/delete")
     @ResponseBody
     public Map<String, Object> deletePaint(HttpSession session,
@@ -251,6 +252,58 @@ public class PaintController {
         paintPermissionService.unsharePaint(paintId, targetUserId);
         json.put("success", true);
         return json;
+    }
+
+    @PostMapping("/paint/copy")
+    @ResponseBody
+    public Map<String, Object> copyPaint(HttpSession session,
+                                         @RequestParam int paintId) {
+        Map<String, Object> json = new HashMap<>();
+
+        String currentUser = (String) session.getAttribute("username");
+        int userId = userService.getId(currentUser);
+
+        Paint original = paintService.findById(paintId);
+        if (original == null) {
+            json.put("success", false);
+            json.put("message", "Paint not found");
+            return json;
+        }
+
+        int randomNum = (int)(Math.random() * 9999);
+        String newName = original.getName() + "_copy" + randomNum;
+
+        Paint copy = new Paint();
+        copy.setName(newName);
+        copy.setData(original.getData());
+        copy.setOwnerId(userId);
+        copy.setPublic(false);
+        copy.setInTrash(false);
+
+        paintService.addPaint(copy);
+
+        json.put("success", true);
+        json.put("newPaintId", copy.getId());
+        return json;
+    }
+
+    @GetMapping("/paint/view")
+    public String viewPaint(@RequestParam int paintId,
+                            HttpSession session,
+                            Model model) {
+
+        String currentUser = (String) session.getAttribute("username");
+
+        Paint paint = paintService.findById(paintId);
+
+        if (paint == null) {
+            return "redirect:/error";
+        }
+
+        model.addAttribute("paintName", paint.getName());
+        model.addAttribute("drawingData", paint.getData());
+
+        return "view";
     }
 
 

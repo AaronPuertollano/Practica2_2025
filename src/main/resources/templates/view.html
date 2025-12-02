@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>${paintName}</title>
+    <style>
+        body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background-color: #f4f4f9;
+          text-align: center;
+          padding: 20px;
+        }
+
+        h2 {
+          color: #333;
+          margin-bottom: 20px;
+        }
+
+        canvas {
+          background-color: white;
+          order-radius: 10px;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+          cursor: crosshair;
+        }
+
+        a {
+          display: inline-block;
+          margin-top: 20px;
+          color: white;
+          background-color: #007bff;
+          padding: 8px 16px;
+          text-decoration: none;
+          border-radius: 6px;
+        }
+
+        a:hover {
+          background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+
+<h2 th:text="${paintName}"></h2>
+
+<canvas id="canvas" width="600" height="400"></canvas>
+
+<br>
+<a href="/paint">Back</a>
+
+<script th:inline="javascript">
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    // Thymeleaf inserta aquí el JSON directamente como string seguro
+    const drawingData = /*[[${drawingData}]]*/ '[]';
+
+    try {
+        const shapes = JSON.parse(drawingData);
+
+        shapes.forEach(shape => {
+            ctx.beginPath();
+            ctx.fillStyle = shape.color;
+            ctx.strokeStyle = shape.color;
+
+            if (shape.type === "circle") {
+                ctx.arc(shape.x, shape.y, shape.size, 0, Math.PI * 2);
+                shape.filled ? ctx.fill() : ctx.stroke();
+
+            } else if (shape.type === "square") {
+                ctx.rect(
+                    shape.x - shape.size / 2,
+                    shape.y - shape.size / 2,
+                    shape.size,
+                    shape.size
+                );
+                shape.filled ? ctx.fill() : ctx.stroke();
+
+            } else if (shape.type === "triangle") {
+                const h = shape.size * Math.sqrt(3) / 2;
+                ctx.moveTo(shape.x, shape.y - h / 2);
+                ctx.lineTo(shape.x - shape.size / 2, shape.y + h / 2);
+                ctx.lineTo(shape.x + shape.size / 2, shape.y + h / 2);
+                ctx.closePath();
+                shape.filled ? ctx.fill() : ctx.stroke();
+
+            } else if (shape.type === "star") {
+                const points = 7;
+                const R = shape.size;
+                const r = shape.size / 2.5;
+                const ang = Math.PI / points;
+
+                for (let i = 0; i < points * 2; i++) {
+                    const radius = (i % 2 === 0) ? R : r;
+                    const px = shape.x + radius * Math.cos(i * ang);
+                    const py = shape.y + radius * Math.sin(i * ang);
+
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+                ctx.closePath();
+                shape.filled ? ctx.fill() : ctx.stroke();
+
+            } else if (shape.type === "hand" && shape.points?.length > 1) {
+                ctx.beginPath();
+                ctx.strokeStyle = shape.color;
+                ctx.lineWidth = shape.size / 5;
+
+                ctx.moveTo(shape.points[0].x, shape.points[0].y);
+
+                for (let i = 1; i < shape.points.length; i++) {
+                    ctx.lineTo(shape.points[i].x, shape.points[i].y);
+                }
+
+                ctx.stroke();
+                ctx.closePath();
+            }
+        });
+
+    } catch (err) {
+        console.error("Error:", err);
+        alert("Error loading drawing.");
+    }
+</script>
+</body>
+</html>

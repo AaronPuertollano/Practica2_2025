@@ -156,8 +156,7 @@
         <p>Day creation: <span th:text="${paint.creationDate}"></span></p>
         <p>Last modification: <span th:text="${paint.lastModified}"></span></p>
 
-        <button class="copy-btn"
-                th:attr="data-name=${paint.name}">
+        <button class="copy-btn" th:attr="data-id=${paint.id}">
             Copy
         </button>
 
@@ -175,33 +174,40 @@
 </div>
 
 
-<form action="logout" method="get" style="display:inline;">
+<form action="/logout" method="post" style="display:inline;">
     <button type="submit">Logout</button>
 </form>
 
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
 
-      document.querySelectorAll(".delete-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const name = btn.dataset.name;
-          if (confirm(`Are you sure?`)) {
-            fetch("/private?action=delete&name=" + encodeURIComponent(name), {
-              method: "POST"
-            })
-            .then(res => res.json())
-            .then(data => {
-              if (data.success) {
-                alert("Drawing deleted!");
-                location.reload();
-              } else {
-                alert("Error deleting drawing.");
-              }
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".copy-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const paintId = btn.dataset.id;
+
+                if (!confirm("Do you want to copy this drawing?")) return;
+
+                fetch("/paint/copy", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: `paintId=${paintId}`
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Drawing copied successfully!);
+                        location.reload();
+                    } else {
+                        alert("Error copying drawing: " + data.message);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Failed to connect to the server.");
+                });
             });
-          }
         });
-      });
     });
 
 </script>
