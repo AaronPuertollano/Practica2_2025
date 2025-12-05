@@ -37,4 +37,17 @@ public class PaintVersionDAOsql implements PaintVersionDAO {
             return v;
         }, paintId);
     }
+
+    @Override
+    public Paint_Versions findById(int id) {
+        String sql = "SELECT * FROM paint_versions WHERE id = ?";
+        return jdbc.queryForObject(sql, (rs, rowNum) -> {
+            Paint_Versions v = new Paint_Versions();
+            v.setId(rs.getInt("id"));
+            v.setPaintId(rs.getInt("paint_id"));
+            v.setVersionNumber(rs.getInt("version_number"));
+            v.setData(rs.getString("data"));
+            return v;
+        }, id);
+    }
 }

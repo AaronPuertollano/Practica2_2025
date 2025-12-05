@@ -3,6 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="'Versions of ' + ${paint.name}">Versions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        a.btn-back {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: white;
+            background-color: #007bff;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+        a.btn-back:hover {
+            background-color: #0056b3;
+        }
+
+        h1, h2 {
+            text-align: center;
+            margin: 1rem 0;
+            color: #222;
+        }
+
+        p {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        table {
+            width: 90%;
+            max-width: 800px;
+            margin: 0 auto 2rem auto;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #222;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        button.btn-view, button.btn-restore {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 0 0.2rem;
+            transition: background-color 0.3s;
+        }
+
+        button.btn-restore {
+            background-color: #28a745;
+        }
+
+        button.btn-view:hover {
+            background-color: #0056b3;
+        }
+
+        button.btn-restore:hover {
+            background-color: #1e7e34;
+        }
+
+        @media (max-width: 600px) {
+            table, th, td {
+                font-size: 0.9rem;
+                padding: 0.5rem;
+            }
+
+            button {
+                padding: 0.3rem 0.6rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -19,14 +123,13 @@
     <h2>Saved Versions</h2>
 
     <p th:if="${#lists.isEmpty(versions)}">
-        No versions available yet.
+        This place is empty...
     </p>
 
     <table th:if="${!#lists.isEmpty(versions)}">
         <thead>
         <tr>
-            <th>#</th>
-            <th>Saved At</th>
+            <th>Number</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -34,11 +137,11 @@
         <tbody>
         <tr th:each="v : ${versions}">
             <td th:text="${v.versionNumber}"></td>
-            <td th:text="${v.savedAt}"></td>
+
             <td>
-                <button class="btn btn-preview"
+                <button class="btn btn-view"
                         th:attr="data-id=${v.id}">
-                    Preview
+                    View
                 </button>
 
                 <button class="btn btn-restore"
@@ -46,10 +149,6 @@
                     Restore
                 </button>
 
-                <a th:href="'/paint/versions/download?versionId=' + ${v.id}"
-                   class="btn btn-download">
-                    Download
-                </a>
             </td>
         </tr>
         </tbody>
@@ -58,10 +157,10 @@
 
 <script>
     // PREVIEW VERSION
-    document.querySelectorAll(".btn-preview").forEach(btn => {
+    document.querySelectorAll(".btn-view").forEach(btn => {
         btn.addEventListener("click", () => {
             const versionId = btn.dataset.id;
-            window.location.href = "/paint/versions/preview?versionId=" + versionId;
+            window.location.href = "/version/view?versionId=" + versionId;
         });
     });
 
@@ -75,7 +174,7 @@
                 return;
             }
 
-            fetch("/paint/versions/restore", {
+            fetch("/version/restore", {   // <-- RUTA ABSOLUTA
                 method: "POST",
                 headers: {"Content-Type": "application/x-www-form-urlencoded"},
                 body: `paintId=${paintId}&versionId=${versionId}`

@@ -25,4 +25,8 @@ public class PaintVersionService {
     public List<Paint_Versions> findByPaintId(int paintId){
         return paintVersionDAO.findByPaintId(paintId);
     }
+
+    public Paint_Versions findById(int id) {
+        return paintVersionDAO.findById(id);
+    }
 }

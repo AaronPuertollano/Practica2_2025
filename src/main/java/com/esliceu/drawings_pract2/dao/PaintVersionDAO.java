@@ -8,4 +8,5 @@ public interface PaintVersionDAO {
     void save(Paint_Versions version);
     Integer getLastVersionNumber(int paintId);
     List<Paint_Versions> findByPaintId(int paintId);
+    Paint_Versions findById(int id);
 }

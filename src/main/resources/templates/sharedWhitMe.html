@@ -181,13 +181,11 @@
 
 <script>
 
-    document.addEventListener("DOMContentLoaded", () => {
+    // COPY BUTTON
         document.querySelectorAll(".copy-btn").forEach(btn => {
             btn.addEventListener("click", () => {
                 const paintId = btn.dataset.id;
-
                 if (!confirm("Do you want to copy this drawing?")) return;
-
                 fetch("/paint/copy", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -196,7 +194,7 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        alert("Drawing copied successfully!);
+                        alert("Drawing copied successfully!");
                         location.reload();
                     } else {
                         alert("Error copying drawing: " + data.message);
@@ -208,17 +206,15 @@
                 });
             });
         });
-    });
 
-    document.addEventListener("DOMContentLoaded", () => {
+
+    // VIEW BUTTON
         document.querySelectorAll(".view-btn").forEach(btn => {
             btn.addEventListener("click", () => {
                 const paintId = btn.dataset.id;
-
                 window.location.href = "/paint/view?paintId=" + paintId;
             });
         });
-    });
 
 </script>
 
