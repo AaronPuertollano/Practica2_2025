@@ -1,5 +1,6 @@
 package com.esliceu.drawings_pract2.controller;
 
+import com.esliceu.drawings_pract2.filter.PasswordConverter;
 import com.esliceu.drawings_pract2.model.User;
 import com.esliceu.drawings_pract2.service.UserService;
 import jakarta.servlet.ServletException;
@@ -14,6 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 
 @Controller
 public class UserController {
@@ -29,9 +34,9 @@ public class UserController {
     @PostMapping("/login")
     public String loginSubmit(@RequestParam String username,
                               @RequestParam String password,
-                              Model model, HttpServletRequest req, HttpServletResponse resp) {
+                              Model model, HttpServletRequest req, HttpServletResponse resp) throws NoSuchAlgorithmException {
 
-        String passwordHash = String.valueOf(password.hashCode());
+        String passwordHash = PasswordConverter.hashPassword(password);
 
         if (userService.validateUser(username, passwordHash)) {
             HttpSession session = req.getSession();
@@ -52,9 +57,9 @@ public class UserController {
     @PostMapping("/register")
     public String registerUser(@RequestParam String name,
                                @RequestParam String username,
-                               @RequestParam String password) {
+                               @RequestParam String password) throws NoSuchAlgorithmException {
 
-        String passwordHash = String.valueOf(password.hashCode());
+        String passwordHash = PasswordConverter.hashPassword(password);
 
         userService.addUser(new User(name, username, passwordHash));
         return "redirect:/login";
@@ -71,5 +76,6 @@ public class UserController {
 
         return "redirect:/login";
     }
+
 }
 

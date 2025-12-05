@@ -1,6 +1,7 @@
 package com.esliceu.drawings_pract2.controller;
 
 import com.esliceu.drawings_pract2.model.Paint;
+import com.esliceu.drawings_pract2.model.Paint_Versions;
 import com.esliceu.drawings_pract2.model.User;
 import com.esliceu.drawings_pract2.service.PaintPermissionService;
 import com.esliceu.drawings_pract2.service.PaintService;
@@ -60,13 +61,28 @@ public class PaintController {
         }
 
         int ownerId = userService.getId(user);
+        Paint paintExist = paintService.existsByNameAndOwner(name, ownerId);
 
-        //Envez de no hacerlo puedo comporovar de que hay otro con el mismo nombre y sobreeescribir, asi opdria empezar
-        // con las versiones (si tiene el mismo json de figura no se hace)
-        //si se está editando con otro usuario comprovar si tiene permisos.
-        if (paintService.existsByNameAndOwner(name, ownerId)) {
-            json.put("success", false);
-            json.put("message", "You already have a drawing with that name.");
+        if (paintExist != null) {
+
+            if (!paintExist.getData().equals(drawingData)) {
+
+                Paint_Versions version = new Paint_Versions();
+                version.setPaintId(paintExist.getId());
+
+                int lastVersionNumber = paintVersionService.getLastVersionNumber(paintExist.getId());
+                version.setVersionNumber(lastVersionNumber + 1);
+
+                version.setData(paintExist.getData());
+                paintVersionService.saveVersion(version);
+
+                paintExist.setData(drawingData);
+                paintExist.setLastModified(LocalDateTime.now());
+                paintService.update(paintExist);
+            }
+
+            json.put("success", true);
+            json.put("message", "Paint updated and version saved");
             return json;
         }
 
@@ -184,8 +200,6 @@ public class PaintController {
         }
 
         paintService.delete(paintId);
-
-        //TAMBIEN TIENE QUE BORRAR DE LA TRABLA DE SHARE Y VERSIONES
 
         json.put("success", true);
         return json;

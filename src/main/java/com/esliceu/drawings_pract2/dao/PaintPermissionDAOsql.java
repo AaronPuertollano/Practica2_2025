@@ -45,5 +45,12 @@ public class PaintPermissionDAOsql implements PaintPermissionDAO {
         jdbc.update(sql, userId, paintId);
     }
 
+    @Override
+    public Boolean canView(int userId, int paintId) {
+        String sql = "SELECT COUNT(*) FROM paint_permissions WHERE user_id = ? AND paint_id = ?";
+        Integer count = jdbc.queryForObject(sql, Integer.class, userId, paintId);
+        return count != null && count > 0;
+    }
+
 }
 

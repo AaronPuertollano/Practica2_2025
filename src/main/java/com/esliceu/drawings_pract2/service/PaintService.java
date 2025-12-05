@@ -41,7 +41,7 @@ public class PaintService {
         return paintDAO.findByOwnerAndTrash(ownerId, inTrash);
     }
 
-    public boolean existsByNameAndOwner(String name, int ownerId){
+    public Paint existsByNameAndOwner(String name, int ownerId){
         return paintDAO.existsByNameAndOwner(name, ownerId);
     }
 

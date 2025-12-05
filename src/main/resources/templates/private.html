@@ -175,7 +175,7 @@
             View
         </button>
 
-        <button class="versions-btn" th:attr="data-name=${paint.name}">
+        <button class="version-btn" th:attr="data-id=${paint.id}">
             View all versions
         </button>
 
@@ -198,14 +198,13 @@
 
 
 <script>
-
     document.addEventListener("DOMContentLoaded", () => {
+
+        // COPY BUTTON
         document.querySelectorAll(".copy-btn").forEach(btn => {
             btn.addEventListener("click", () => {
                 const paintId = btn.dataset.id;
-
                 if (!confirm("Do you want to copy this drawing?")) return;
-
                 fetch("/paint/copy", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -226,17 +225,12 @@
                 });
             });
         });
-    });
 
-    document.addEventListener("DOMContentLoaded", () => {
-
+        // TRASH BUTTON
         document.querySelectorAll(".trash-btn").forEach(btn => {
             btn.addEventListener("click", () => {
                 const paintId = btn.dataset.id;
-                const confirmTrash = confirm("Move this paint to trash?");
-
-                if (!confirmTrash) return;
-
+                if (!confirm("Move this paint to trash?")) return;
                 fetch("/paint/changeTrash", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -254,29 +248,29 @@
             });
         });
 
-            document.querySelectorAll(".share-btn").forEach(btn => {
-                btn.addEventListener("click", async () => {
-                    const paintId = btn.dataset.id;
-                    const username = prompt("Enter the username to share with:");
-                    if (!username) return;
-                    const canWrite = confirm("Allow write permission?");
-                    const res = await fetch("/paint/share", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                        body: `paintId=${paintId}&username=${username}&canWrite=${canWrite}`
-                    });
-                    const data = await res.json();
-                    if (data.success) alert("Shared successfully!");
-                    else alert("Error: " + data.message);
+        // SHARE BUTTON
+        document.querySelectorAll(".share-btn").forEach(btn => {
+            btn.addEventListener("click", async () => {
+                const paintId = btn.dataset.id;
+                const username = prompt("Enter the username to share with:");
+                if (!username) return;
+                const canWrite = confirm("Allow write permission?");
+                const res = await fetch("/paint/share", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: `paintId=${paintId}&username=${username}&canWrite=${canWrite}`
                 });
+                const data = await res.json();
+                if (data.success) alert("Shared successfully!");
+                else alert("Error: " + data.message);
             });
+        });
 
-
+        // PUBLIC BUTTON
         document.querySelectorAll(".public-btn").forEach(btn => {
             btn.addEventListener("click", () => {
                 const paintId = btn.dataset.id;
                 const isPublic = confirm("Make this paint public?");
-
                 fetch("/paint/changePublic", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -294,19 +288,25 @@
             });
         });
 
-    });
-
-    document.addEventListener("DOMContentLoaded", () => {
+        // VIEW BUTTON
         document.querySelectorAll(".view-btn").forEach(btn => {
             btn.addEventListener("click", () => {
                 const paintId = btn.dataset.id;
-
                 window.location.href = "/paint/view?paintId=" + paintId;
             });
         });
-    });
 
+        // VIEW VERSION BUTTON
+        document.querySelectorAll(".version-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const paintId = btn.dataset.id;
+                window.location.href = "/versions?paintId=" + paintId;
+            });
+        });
+
+    });
 </script>
+
 
 
 </body>

@@ -263,8 +263,8 @@
         <h4>FILL</h4>
 
         <select id="fillShape">
-            <option value="true">Yes</option>
-            <option value="false">No</option>
+            <option value="true">YES</option>
+            <option value="false">NO</option>
         </select>
 
     </div>
@@ -284,6 +284,8 @@
     const shapes = [];
     let isDrawing = false;
     let currentShape = null;
+    let autoSaveInterval = null;
+
 
     // Cargar shapes desde localStorage al iniciar
     document.addEventListener("DOMContentLoaded", () => {

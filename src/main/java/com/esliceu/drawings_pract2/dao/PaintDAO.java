@@ -13,7 +13,7 @@ public interface PaintDAO {
     List<Paint> findByOwner(int ownerId);
     List<Paint> findPublicPaints();
     List<Paint> findByOwnerAndTrash(int ownerId, boolean inTrash);
-    boolean existsByNameAndOwner(String name, int ownerId);
+    Paint existsByNameAndOwner(String name, int ownerId);
 
 
 }

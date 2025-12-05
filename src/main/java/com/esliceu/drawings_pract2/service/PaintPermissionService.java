@@ -48,4 +48,9 @@ public class PaintPermissionService {
 
         return sharedPaints;
     }
+
+    public  boolean canView(int ownerId, int paintId){
+        Boolean result = paintPermissionDAO.canView(ownerId, paintId);
+        return result != null && result;
+    }
 }

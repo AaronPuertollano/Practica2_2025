@@ -106,14 +106,16 @@ public class PaintDAOsql implements PaintDAO{
     }
 
     @Override
-    public boolean existsByNameAndOwner(String name, int ownerId) {
-        Integer count = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM paints WHERE name = ? AND owner_id = ?",
-                Integer.class,
-                name,
-                ownerId
-        );
-
-        return count != null && count > 0;
+    public Paint existsByNameAndOwner(String name, int ownerId) {
+        try {
+            return jdbc.queryForObject(
+                    "SELECT * FROM paints WHERE name = ? AND owner_id = ?",
+                    paintMapper,
+                    name,
+                    ownerId
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 }

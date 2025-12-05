@@ -10,5 +10,5 @@ public interface PaintPermissionDAO {
     boolean hasWritePermission(int userId, int paintId);
     void addPermission(int userId, int paintId, boolean canWrite);
     void removePermission(int userId, int paintId);
-
+    Boolean canView(int ownerId, int paintId);
 }

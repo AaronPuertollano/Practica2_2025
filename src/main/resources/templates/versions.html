@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Versions of ' + ${paint.name}">Versions</title>
+</head>
+
+<body>
+
+<div class="container">
+    <a href="/private" class="btn btn-back">← Back to gallery</a>
+
+    <h1 th:text="'Versions of: ' + ${paint.name}">Versions</h1>
+    <p>
+        <strong>Created:</strong> <span th:text="${paint.creationDate}"></span><br>
+        <strong>Last Modified:</strong> <span th:text="${paint.lastModified}"></span>
+    </p>
+
+    <h2>Saved Versions</h2>
+
+    <p th:if="${#lists.isEmpty(versions)}">
+        No versions available yet.
+    </p>
+
+    <table th:if="${!#lists.isEmpty(versions)}">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Saved At</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="v : ${versions}">
+            <td th:text="${v.versionNumber}"></td>
+            <td th:text="${v.savedAt}"></td>
+            <td>
+                <button class="btn btn-preview"
+                        th:attr="data-id=${v.id}">
+                    Preview
+                </button>
+
+                <button class="btn btn-restore"
+                        th:attr="data-paint=${paint.id}, data-version=${v.id}">
+                    Restore
+                </button>
+
+                <a th:href="'/paint/versions/download?versionId=' + ${v.id}"
+                   class="btn btn-download">
+                    Download
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // PREVIEW VERSION
+    document.querySelectorAll(".btn-preview").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const versionId = btn.dataset.id;
+            window.location.href = "/paint/versions/preview?versionId=" + versionId;
+        });
+    });
+
+    // RESTORE VERSION
+    document.querySelectorAll(".btn-restore").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const paintId = btn.dataset.paint;
+            const versionId = btn.dataset.version;
+
+            if (!confirm("Do you want to restore this version? Your current drawing will be replaced.")) {
+                return;
+            }
+
+            fetch("/paint/versions/restore", {
+                method: "POST",
+                headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                body: `paintId=${paintId}&versionId=${versionId}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Version restored successfully!");
+                    window.location.reload();
+                } else {
+                    alert("Error restoring version: " + data.message);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Error contacting server.");
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
