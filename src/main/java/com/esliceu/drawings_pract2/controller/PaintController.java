@@ -323,5 +323,77 @@ public class PaintController {
         return "view";
     }
 
+    @GetMapping("/edit")
+    public String editPaint(@RequestParam int paintId,
+                            HttpSession session,
+                            Model model) {
+
+        String username = (String) session.getAttribute("username");
+        if (username == null) return "redirect:/login";
+
+        Paint paint = paintService.findById(paintId);
+        if (paint == null) return "error/404";
+
+        int userId = userService.getId(username);
+
+        boolean isOwner = paint.getOwnerId() == userId;
+
+        boolean hasEditPermission = paintPermissionService.userCanWrite(paintId, userId);
+
+        if (!isOwner && !hasEditPermission) {
+            return "error/403";
+        }
+
+        model.addAttribute("paint", paint);
+        model.addAttribute("paintData", paint.getData());
+
+        return "edit";
+    }
+
+    @PostMapping("/update")
+    @ResponseBody
+    public Map<String, Object> updatePaint(@RequestParam int paintId,
+                                           @RequestParam String data,
+                                           HttpSession session) {
+
+        Map<String, Object> resp = new HashMap<>();
+
+        String username = (String) session.getAttribute("username");
+        if (username == null) {
+            resp.put("success", false);
+            resp.put("message", "Not logged in");
+            return resp;
+        }
+
+        Paint paint = paintService.findById(paintId);
+        if (paint == null) {
+            resp.put("success", false);
+            resp.put("message", "Paint not found");
+            return resp;
+        }
+
+        int userId = userService.getId(username);
+
+        // ✔ PERMITIR si es dueño
+        boolean isOwner = paint.getOwnerId() == userId;
+
+        // ✔ PERMITIR si tiene permiso para editar
+        boolean hasEditPermission = paintPermissionService.userCanWrite(paintId, userId);
+
+        if (!isOwner && !hasEditPermission) {
+            resp.put("success", false);
+            resp.put("message", "Unauthorized");
+            return resp;
+        }
+
+        paint.setData(data);
+        paint.setLastModified(LocalDateTime.now());
+        paintService.update(paint);
+
+        resp.put("success", true);
+        resp.put("message", "Saved successfully!");
+        return resp;
+    }
+
 
 }

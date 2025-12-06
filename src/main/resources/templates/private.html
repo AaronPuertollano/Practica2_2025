@@ -162,10 +162,7 @@
             Move to trash
         </button>
 
-        <button class="edit-btn"
-                th:attr="data-name=${paint.name}">
-            Edit
-        </button>
+        <button class="edit-btn" th:data-id="${paint.id}">Edit</button>
 
         <button class="copy-btn" th:attr="data-id=${paint.id}">
             Copy
@@ -304,6 +301,20 @@
             });
         });
 
+        //EDIT BUTON
+
+        document.querySelectorAll(".edit-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const paintId = btn.dataset.id;
+
+                if (!paintId) {
+                    console.error("No paintId found");
+                    return;
+                }
+
+                window.location.href = "/edit?paintId=" + paintId;
+            });
+        });
     });
 </script>
 

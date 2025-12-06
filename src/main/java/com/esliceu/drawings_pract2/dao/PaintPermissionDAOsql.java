@@ -2,6 +2,7 @@ package com.esliceu.drawings_pract2.dao;
 
 import com.esliceu.drawings_pract2.model.Paint_Permissons;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -29,8 +30,13 @@ public class PaintPermissionDAOsql implements PaintPermissionDAO {
     @Override
     public boolean hasWritePermission(int userId, int paintId) {
         String sql = "SELECT can_write FROM paint_permissions WHERE user_id = ? AND paint_id = ?";
-        Boolean canWrite = jdbc.queryForObject(sql, Boolean.class, userId, paintId);
-        return canWrite != null && canWrite;
+        try {
+            Boolean canWrite = jdbc.queryForObject(sql, Boolean.class, userId, paintId);
+            return canWrite != null && canWrite;
+        } catch (EmptyResultDataAccessException e) {
+            // No hay fila → el usuario no tiene permiso
+            return false;
+        }
     }
 
     @Override
