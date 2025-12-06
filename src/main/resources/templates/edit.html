@@ -194,6 +194,7 @@
 
 <div class="contingut">
 
+    <input type="hidden" id="paintId" th:value="${paint.id}">
     <canvas id="myCanvas" width="600" height="400" style="border:3px solid #000000;"></canvas>
 
     <div class="list">
@@ -473,25 +474,27 @@ const saveShapesToLocalStorage = () => {
 document.getElementById("saveButton").addEventListener("click", handleSaveDrawing);
 
 function handleSaveDrawing() {
-  let namePaint = document.getElementById("namepaint").value.trim();
 
-  // Si no hay nombre, generamos uno
-  if (!namePaint) {
-    const randomNum = Math.floor(Math.random() * 10000);
-    namePaint = "Drawing_" + randomNum;
-    document.getElementById("namepaint").value = namePaint;
-  }
+  // Debes tener el paintId en un hidden en el HTML
+  const paintId = document.getElementById("paintId").value;
+  let namePaint = document.getElementById("namepaint").value.trim();
 
   if (shapes.length === 0) {
     alert("Please add at least one shape before saving.");
     return;
   }
 
-  const params = new URLSearchParams();
-  params.append("name", namePaint);
-  params.append("drawingData", JSON.stringify(shapes));
+  if (!paintId) {
+    alert("Error: paintId missing!");
+    return;
+  }
 
-  fetch("/paint", {
+  const params = new URLSearchParams();
+  params.append("paintId", paintId);
+  params.append("name", namePaint);
+  params.append("data", JSON.stringify(shapes));
+
+  fetch("/update", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: params.toString()
@@ -499,14 +502,10 @@ function handleSaveDrawing() {
   .then(res => res.json())
   .then(data => {
     if (data.success) {
-      alert("Drawing saved successfully!");
-      shapes.length = 0;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      updateShapeList();
-      document.getElementById("namepaint").value = "";
-      localStorage.removeItem("shapes");
+      alert("Drawing updated successfully!");
+      window.location.href = "/private";
     } else {
-      alert("Error saving drawing: " + (data.message || "Unknown error"));
+      alert("Error updating drawing: " + (data.message || "Unknown error"));
     }
   })
   .catch(err => {

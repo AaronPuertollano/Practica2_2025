@@ -30,11 +30,20 @@ public class PaintPermissionDAOsql implements PaintPermissionDAO {
     @Override
     public boolean hasWritePermission(int userId, int paintId) {
         String sql = "SELECT can_write FROM paint_permissions WHERE user_id = ? AND paint_id = ?";
+
         try {
+            // 2. Usamos queryForObject. La columna can_write es TINYINT(1) en MySQL,
+            //    que se mapea directamente a un Boolean en Java por Spring JDBC.
             Boolean canWrite = jdbc.queryForObject(sql, Boolean.class, userId, paintId);
-            return canWrite != null && canWrite;
+
+            // 3. Retornamos el valor directamente. Si la consulta devuelve TRUE,
+            //    retorna TRUE. Si devuelve FALSE, retorna FALSE.
+            //    (Nota: canWrite nunca será null aquí si la fila se encuentra).
+            return canWrite != null ? canWrite : false;
+
         } catch (EmptyResultDataAccessException e) {
-            // No hay fila → el usuario no tiene permiso
+            // 4. Si la consulta no devuelve resultados (el permiso no existe),
+            //    significa que no tiene permiso. Retornamos FALSE.
             return false;
         }
     }

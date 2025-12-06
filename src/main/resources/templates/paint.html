@@ -285,6 +285,7 @@
     let isDrawing = false;
     let currentShape = null;
     let autoSaveInterval = null;
+    localStorage.removeItem("shapes");
 
 
     // Cargar shapes desde localStorage al iniciar
@@ -503,11 +504,12 @@
       .then(data => {
         if (data.success) {
           alert("Drawing saved successfully!");
+          /*
           shapes.length = 0;
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           updateShapeList();
           document.getElementById("namepaint").value = "";
-          localStorage.removeItem("shapes");
+          localStorage.removeItem("shapes"); */
         } else {
           alert("Error saving drawing: " + (data.message || "Unknown error"));
         }

@@ -329,19 +329,24 @@ public class PaintController {
                             Model model) {
 
         String username = (String) session.getAttribute("username");
-        if (username == null) return "redirect:/login";
-
         Paint paint = paintService.findById(paintId);
+
         if (paint == null) return "error/404";
 
         int userId = userService.getId(username);
 
         boolean isOwner = paint.getOwnerId() == userId;
 
-        boolean hasEditPermission = paintPermissionService.userCanWrite(paintId, userId);
+        boolean hasEditPermission = paintPermissionService.userCanWrite(userId, paintId);
+
+        System.out.println(paintId);
+        System.out.println(userId);
+
+        System.out.println("DEBUG: Es Dueño: " + isOwner);
+        System.out.println("DEBUG: Tiene Permiso: " + hasEditPermission);
 
         if (!isOwner && !hasEditPermission) {
-            return "error/403";
+            return "paint";
         }
 
         model.addAttribute("paint", paint);
@@ -352,7 +357,7 @@ public class PaintController {
 
     @PostMapping("/update")
     @ResponseBody
-    public Map<String, Object> updatePaint(@RequestParam int paintId,
+    public Map<String, Object> updatePaint(@RequestParam int paintId, @RequestParam String name,
                                            @RequestParam String data,
                                            HttpSession session) {
 
@@ -378,7 +383,7 @@ public class PaintController {
         boolean isOwner = paint.getOwnerId() == userId;
 
         // ✔ PERMITIR si tiene permiso para editar
-        boolean hasEditPermission = paintPermissionService.userCanWrite(paintId, userId);
+        boolean hasEditPermission = paintPermissionService.userCanWrite(userId, paintId);
 
         if (!isOwner && !hasEditPermission) {
             resp.put("success", false);
@@ -387,6 +392,7 @@ public class PaintController {
         }
 
         paint.setData(data);
+        paint.setName(name);
         paint.setLastModified(LocalDateTime.now());
         paintService.update(paint);
 
