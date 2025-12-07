@@ -60,6 +60,7 @@ public class PaintController {
             return json;
         }
 
+
         int ownerId = userService.getId(user);
         Paint paintExist = paintService.existsByNameAndOwner(name, ownerId);
 
@@ -371,6 +372,7 @@ public class PaintController {
         }
 
         Paint paint = paintService.findById(paintId);
+
         if (paint == null) {
             resp.put("success", false);
             resp.put("message", "Paint not found");
@@ -387,6 +389,15 @@ public class PaintController {
             return resp;
         }
 
+        Paint_Versions version = new Paint_Versions();
+        version.setPaintId(paint.getId());
+
+        int lastVersionNumber = paintVersionService.getLastVersionNumber(paint.getId());
+        version.setVersionNumber(lastVersionNumber + 1);
+
+        version.setData(paint.getData());
+        paintVersionService.saveVersion(version);
+
         paint.setData(data);
         paint.setName(name);
         paint.setLastModified(LocalDateTime.now());
@@ -396,6 +407,7 @@ public class PaintController {
         resp.put("message", "Saved successfully!");
         return resp;
     }
+
 
 
 }
