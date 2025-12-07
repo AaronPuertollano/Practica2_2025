@@ -105,6 +105,22 @@
           transition: background-color 0.3s;
         }
 
+        .btnback {
+            display: inline-block;
+            margin: 1.5rem auto;
+            margin-bottom: 1rem;
+            color: white;
+            background-color: #007bff;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+        .btnback:hover {
+            background-color: #0056b3;
+        }
+
         form[action="logout"] button:hover {
           background-color: #b52b27;
         }
@@ -175,7 +191,7 @@
 
 
 <form action="/logout" method="post" style="display:inline;">
-    <button type="submit">Logout</button>
+    <button type="submit" class="btnback">Logout</button>
 </form>
 
 

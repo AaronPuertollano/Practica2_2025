@@ -9,4 +9,6 @@ public interface UserDAO {
     boolean checkUser(String username, String password);
 
     Integer getIdByUsername(String username);
+
+    boolean exist(String username);
 }

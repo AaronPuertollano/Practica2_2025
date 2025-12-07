@@ -56,6 +56,7 @@ public class DrawingsPract2Application implements WebMvcConfigurer {
                 .addPathPatterns("/public")
                 .addPathPatterns("/trash")
                 .addPathPatterns("/shared")
+                .addPathPatterns("/edit")
                 .addPathPatterns("/versions");
     }
 

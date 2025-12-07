@@ -36,5 +36,11 @@ public class UserDAOsql implements UserDAO{
         }
     }
 
+    @Override
+    public boolean exist(String username) {
+        String sql = "SELECT COUNT(*) FROM users WHERE username = ?";
+        Integer count = jdbc.queryForObject(sql, Integer.class, username);
+        return count != null && count > 0;
+    }
 
 }

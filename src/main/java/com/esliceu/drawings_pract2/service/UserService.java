@@ -23,4 +23,8 @@ public class UserService {
         return userDAO.getIdByUsername(username);
     }
 
+    public boolean registerUser(String username) {
+        return !userDAO.exist(username);
+    }
+
 }

@@ -173,6 +173,22 @@
           background-color: #b52b27;
         }
 
+        .btnback {
+            display: inline-block;
+            margin: 1.5rem auto;
+            margin-bottom: 1rem;
+            color: white;
+            background-color: #007bff;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+        .btnback:hover {
+            background-color: #0056b3;
+        }
+
         /* ===== Responsivo ===== */
         @media (max-width: 900px) {
           .contingut {
@@ -272,7 +288,7 @@
 </div>
 
 <form action="/logout" method="post" style="display:inline;">
-    <button type="submit">Logout</button>
+    <button type="submit" class="btnback">Logout</button>
 </form>
 
 
@@ -290,6 +306,7 @@
 
     // Cargar shapes desde localStorage al iniciar
     document.addEventListener("DOMContentLoaded", () => {
+        startAutoSave();
         const savedShapes = localStorage.getItem("shapes");
         if (savedShapes) {
             shapes.push(...JSON.parse(savedShapes));
@@ -518,6 +535,23 @@
         alert("Failed to connect to the server.");
       });
     }
+
+    const startAutoSave = () => {
+    if (autoSaveInterval) {
+        clearInterval(autoSaveInterval);
+    }
+
+    autoSaveInterval = setInterval(() => {
+        if (shapes.length > 0) {
+            console.log("Guardado automático iniciado...");
+            handleSaveDrawing();
+        } else {
+            console.log("No hay figuras para guardar automáticamente. Saltando.");
+        }
+    }, 20000);
+
+    console.log("guardado automático on.");
+};
 
 </script>
 

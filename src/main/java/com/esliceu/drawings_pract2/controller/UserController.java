@@ -56,8 +56,20 @@ public class UserController {
 
     @PostMapping("/register")
     public String registerUser(@RequestParam String name,
-                               @RequestParam String username,
+                               @RequestParam String username, Model model,
                                @RequestParam String password) throws NoSuchAlgorithmException {
+
+        boolean ok = userService.registerUser(username);
+
+        if (!ok) {
+            model.addAttribute("error", "The username is already taken");
+            return "register";
+        }
+
+        if (password.length() < 5){
+            model.addAttribute("error", "The password is to small, minimun 5 leters");
+            return "register";
+        }
 
         String passwordHash = PasswordConverter.hashPassword(password);
 
