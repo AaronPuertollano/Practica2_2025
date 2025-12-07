@@ -378,11 +378,7 @@ public class PaintController {
         }
 
         int userId = userService.getId(username);
-
-        // ✔ PERMITIR si es dueño
         boolean isOwner = paint.getOwnerId() == userId;
-
-        // ✔ PERMITIR si tiene permiso para editar
         boolean hasEditPermission = paintPermissionService.userCanWrite(userId, paintId);
 
         if (!isOwner && !hasEditPermission) {

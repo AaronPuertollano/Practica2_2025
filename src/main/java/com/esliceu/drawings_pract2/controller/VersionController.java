@@ -30,9 +30,8 @@ public class VersionController {
                               Model model) {
 
         Paint_Versions version = versionService.findById(versionId);
-        if (version == null) return "error/404";
+        if (version == null) return "paint";
 
-        // IMPORTANTE: enviar los datos JSON
         model.addAttribute("drawingData", version.getData());
         model.addAttribute("version", version);
 

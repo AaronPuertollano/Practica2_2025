@@ -39,6 +39,7 @@ public class PaintPermissionService {
         List<Paint_Permissons> permissions = paintPermissionDAO.findByUser(userId);
         List<Paint> sharedPaints = new ArrayList<>();
 
+        //Itera permisos para obtener pinturas individuales
         for (Paint_Permissons perm : permissions) {
             Paint paint = paintDAO.findById(perm.getPaintId());
             if (paint != null && !paint.isInTrash()) {

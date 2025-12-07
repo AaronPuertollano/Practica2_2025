@@ -47,6 +47,7 @@ public class ListController {
         String username = (String) req.getAttribute("username");
         int ownerId = userService.getId(username);
 
+        //Selecciona todos los dibujos de un susario y despues lo filtra con la condición de que nó estre en trash
         List<Paint> paintList = paintService.findByOwner(ownerId)
                 .stream()
                 .filter(p -> !p.isInTrash())

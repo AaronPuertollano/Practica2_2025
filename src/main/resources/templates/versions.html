@@ -174,7 +174,7 @@
                 return;
             }
 
-            fetch("/version/restore", {   // <-- RUTA ABSOLUTA
+            fetch("/version/restore", {
                 method: "POST",
                 headers: {"Content-Type": "application/x-www-form-urlencoded"},
                 body: `paintId=${paintId}&versionId=${versionId}`

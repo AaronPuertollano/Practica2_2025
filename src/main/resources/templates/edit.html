@@ -403,30 +403,24 @@ const updateShapeList = () => {
 
     document.addEventListener("DOMContentLoaded", () => {
 
-        // A. Inicializar el campo de nombre con el nombre del servidor
         document.getElementById("namepaint").value = INITIAL_PAINT_NAME;
 
-        // B. Intentar cargar los datos del servidor (PRIORIDAD AL MODO EDICIÓN)
         if (INITIAL_PAINT_DATA_STRING && INITIAL_PAINT_DATA_STRING.length > 0) {
             console.log("Modo Edición: Cargando data del servidor.");
             try {
-                // Deserializamos el JSON string y rellenamos el array 'shapes'
                 const serverShapes = JSON.parse(INITIAL_PAINT_DATA_STRING);
-                shapes = serverShapes; // Asignación directa al array
+                shapes = serverShapes;
             } catch (e) {
                 console.error("Error al parsear JSON del servidor. Inicializando vacío.", e);
-                // Si hay un error, el array 'shapes' se queda como []
+                // Si hay un error, el array shapes se vacía
             }
         } else {
-            // C. Lógica de fallback para localStorage (Solo si el servidor no envió nada)
             const savedShapes = localStorage.getItem("shapes");
             if (savedShapes) {
                 console.log("Modo Creación/Fallback: Cargando data del localStorage.");
                 shapes = JSON.parse(savedShapes);
             }
         }
-
-        // D. Redibujar el canvas y actualizar la lista con los datos cargados
         redrawCanvas();
         updateShapeList();
     });
@@ -491,7 +485,6 @@ document.getElementById("saveButton").addEventListener("click", handleSaveDrawin
 
 function handleSaveDrawing() {
 
-  // Debes tener el paintId en un hidden en el HTML
   const paintId = document.getElementById("paintId").value;
   let namePaint = document.getElementById("namepaint").value.trim();
 

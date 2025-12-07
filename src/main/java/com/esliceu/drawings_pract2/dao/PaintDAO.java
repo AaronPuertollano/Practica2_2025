@@ -15,5 +15,4 @@ public interface PaintDAO {
     List<Paint> findByOwnerAndTrash(int ownerId, boolean inTrash);
     Paint existsByNameAndOwner(String name, int ownerId);
 
-
 }
